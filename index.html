@@ -9,10 +9,11 @@
         body { font-family: sans-serif; background: #f4f4f9; margin: 0; padding: 15px; text-align: center; }
         h1 { color: #333; font-size: 20px; margin-bottom: 5px; }
         p { color: #666; font-size: 14px; margin-top: 0; }
-        .loading { font-size: 16px; color: #0088cc; margin-top: 20px; }
+        .search-box { width: 100%; max-width: 400px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
         .car-list { display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto; }
         .car-item { background: #fff; padding: 12px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .car-item:hover { background: #e0e0e0; }
+        .car-item span { font-size: 12px; color: #777; background: #eee; padding: 3px 8px; border-radius: 4px; }
         .details-box { background: #fff; margin-top: 20px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; max-width: 400px; margin-left: auto; margin-right: auto; text-align: left; }
         .photo-gallery { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; }
         .photo-gallery img { width: 280px; height: 180px; border-radius: 6px; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
@@ -22,72 +23,70 @@
 <body>
 
     <h1>HG Japan Car Listings</h1>
-    <p>ကားစာရင်းများကို Google Sheet မှ တိုက်ရိုက်ဖော်ပြနေပါသည်။</p>
-    
-    <div id="loadingMsg" class="loading">ကားစာရင်းများ ရယူနေပါပြီ... ခဏစောင့်ပါ။</div>
+    <p>ကြိုက်နှစ်သက်ရာ ကားကို နှိပ်၍ အချက်အလက်များကို ကြည့်ပါ။</p>
 
-    <div class="car-list" id="carListContainer"></div>
+    <!-- ကားရှာဖွေရန် Search Bar -->
+    <input type="text" id="searchInput" class="search-box" placeholder="ကားနာမည်ဖြင့် ရှာရန်..." onkeyup="searchCars()">
 
+    <!-- ကားအမျိုးအစားများ List -->
+    <div class="car-list" id="carListContainer">
+        <div class="car-item" onclick="showCar('prius')" data-name="toyota prius 2018">🚗 Toyota Prius (2018) <span>Toyota</span></div>
+        <div class="car-item" onclick="showCar('crown')" data-name="toyota crown athlete">🚗 Toyota Crown Athlete <span>Toyota</span></div>
+        <div class="car-item" onclick="showCar('vellfire')" data-name="toyota vellfire 2019">🚐 Toyota Vellfire (2019) <span>Toyota</span></div>
+        <div class="car-item" onclick="showCar('fit')" data-name="honda fit 2017">🚗 Honda Fit (2017) <span>Honda</span></div>
+    </div>
+
+    <!-- ကားအသေးစိတ်နှင့် ပုံများပေါ်မည့်နေရာ -->
     <div id="carDetails" class="details-box">
         <h3 id="carTitle" style="margin-top:0;"></h3>
         <div class="photo-gallery" id="carGallery"></div>
         <p><b>Grade:</b> <span id="carGrade"></span></p>
         <p><b>Mileage:</b> <span id="carMileage"></span></p>
         <p><b>Price:</b> <span id="carPrice" class="price"></span></p>
-        <p><b>အချက်အလက်:</b> <span id="carDesc"></span></p>
+        <p id="carDesc" style="font-size: 13px; color: #444;"></p>
     </div>
 
     <script>
-        // Google Sheet ကနေ ဒေတာတွေကို အလိုအလျောက် လှမ်းယူမည့် နေရာ
-        // (ကျနော် Test လုပ်လို့ရအောင် ယာယီလင့်ခ် ထည့်ပေးထားပါတယ်။ ကိုယ့် Sheet နဲ့ ချိတ်နည်းကို ဆက်ပြောပြပါမယ်)
-        const sheetID = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"; // ယာယီ ID
-        const url = `https://opensheet.elk.sh/${sheetID}/cars`;
-
-        let allCars = [];
-
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                allCars = data;
-                let container = document.getElementById('carListContainer');
-                document.getElementById('loadingMsg').style.display = 'none';
-                
-                data.forEach((car, index) => {
-                    let item = document.createElement('div');
-                    item.className = 'car-item';
-                    item.innerHTML = `🚗 ${car.Title} <span>${car.Price}</span>`;
-                    item.onclick = () => showCar(index);
-                    container.appendChild(item);
-                });
-            })
-            .catch(error => {
-                document.getElementById('loadingMsg').innerText = "ဒေတာဆွဲယူ၍ မရပါ၊ ချိတ်ဆက်မှုကို စစ်ဆေးပါ။";
-            });
-
-        function showCar(index) {
-            let car = allCars[index];
-            document.getElementById('carTitle').innerText = car.Title;
-            document.getElementById('carGrade').innerText = car.Grade;
-            document.getElementById('carMileage').innerText = car.Mileage;
-            document.getElementById('carPrice').innerText = car.Price;
-            document.getElementById('carDesc').innerText = car.Description;
-
-            let gallery = document.getElementById('carGallery');
-            gallery.innerHTML = "";
-            
-            // ပုံလိပ်စာများကို ကော်မာ (,) ခံပြီး ထည့်ထားတာကို ပုံတစ်ပုံချင်းစီ ခွဲထုတ်ပြခြင်း
-            if(car.Images) {
-                let imgList = car.Images.split(',');
-                imgList.forEach(imgUrl => {
-                    let img = document.createElement('img');
-                    img.src = imgUrl.trim();
-                    gallery.appendChild(img);
-                });
-            }
-
-            document.getElementById('carDetails').style.display = 'block';
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
-    </script>
-</body>
-</html>
+        const carsData = {
+            prius: {
+                title: "Toyota Prius 2018 (S Touring)",
+                grade: "S Touring Selection",
+                mileage: "65,000 km",
+                price: "သိန်း ၇၀၀ ကျော်",
+                description: "အင်ဂျင်ဝိုင်အသစ်လဲပြီး၊ အတိုက်အခိုက်လုံးဝမရှိပါ။",
+                images: [
+                    "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500",
+                    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500"
+                ]
+            },
+            crown: {
+                title: "Toyota Crown Athlete",
+                grade: "G-Executive",
+                mileage: "70,000 km",
+                price: "သိန်း ၁၂၀၀ ကျော်",
+                description: "ကားအလွန်သန့်၊ ဘီးစုံအလွတ် တာယာအသစ်။",
+                images: [
+                    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500",
+                    "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500"
+                ]
+            },
+            vellfire: {
+                title: "Toyota Vellfire 2019",
+                grade: "Z G-Edition",
+                mileage: "45,000 km",
+                price: "သိန်း ၂,၅၀၀ ကျော်",
+                description: "Sunroof ပါ၊ Captain Seat အပြည့်အစုံ။",
+                images: [
+                    "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500"
+                ]
+            },
+            fit: {
+                title: "Honda Fit 2017 (F Package)",
+                grade: "F Package",
+                mileage: "52,000 km",
+                price: "သိန်း ၅၀၀ ကျော်",
+                description: "Grade ကောင်း၊ တစ်လက်ကိုင်ဖြစ်ပါသည်။",
+                images: [
+                    "https://images.unsplash.com/photo-1590362891991-f776e747a588?w=500"
+                ]
+     
