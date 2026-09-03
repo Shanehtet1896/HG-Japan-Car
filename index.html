@@ -3,71 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HG Japan Car List</title>
+    <title>Car Data Form</title>
+    <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background: #f4f4f9; margin: 0; padding: 15px; text-align: center; }
-        h1 { color: #333; font-size: 20px; margin-bottom: 5px; }
-        p { color: #666; font-size: 14px; margin-top: 0; }
-        .search-box { width: 100%; max-width: 400px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
-        .car-list { display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto; max-height: 400px; overflow-y: auto; }
-        .car-item { background: #fff; padding: 12px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; text-align: left; display: flex; justify-content: space-between; align-items: center; }
-        .car-item:hover { background: #e0e0e0; }
-        .car-item span { font-size: 12px; color: #777; background: #eee; padding: 3px 8px; border-radius: 4px; }
-        .details-box { background: #fff; margin-top: 20px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; max-width: 400px; margin-left: auto; margin-right: auto; text-align: left; }
-        .photo-gallery { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; }
-        .photo-gallery img { width: 280px; height: 180px; border-radius: 6px; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
-        .price { color: #d9534f; font-weight: bold; font-size: 16px; }
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        button { width: 100%; padding: 12px; background: #2481cc; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #1b65a6; }
     </style>
 </head>
 <body>
 
-    <h1>HG Japan Car Listings</h1>
-    <p>ကြိုက်နှစ်သက်ရာ ဂျပန်ကားကို ရှာပါ သို့မဟုတ် နှိပ်၍ ကြည့်ပါ။</p>
-
-    <!-- ကားရှာဖွေရန် Search Bar -->
-    <input type="text" id="searchInput" class="search-box" placeholder="ကားနာမည်ဖြင့် ရှာရန် (ဥပမာ - Prius, Swift, Crown)..." onkeyup="searchCars()">
-
-    <!-- ကားအမျိုးအစားများ List -->
-    <div class="car-list" id="carListContainer">
-        <!-- Toyota -->
-        <div class="car-item" onclick="showCar('prius')" data-name="toyota prius">🚗 Toyota Prius <span>Toyota</span></div>
-        <div class="car-item" onclick="showCar('crown')" data-name="toyota crown">🚗 Toyota Crown <span>Toyota</span></div>
-        <div class="car-item" onclick="showCar('vellfire')" data-name="toyota vellfire">🚐 Toyota Vellfire <span>Toyota</span></div>
-        <div class="car-item" onclick="showCar('alphard')" data-name="toyota alphard">🚐 Toyota Alphard <span>Toyota</span></div>
-        <div class="car-item" onclick="showCar('yaris')" data-name="toyota yaris">🚗 Toyota Yaris <span>Toyota</span></div>
-        <div class="car-item" onclick="showCar('probox')" data-name="toyota probox">🚙 Toyota Probox <span>Toyota</span></div>
-        
-        <!-- Honda -->
-        <div class="car-item" onclick="showCar('fit')" data-name="honda fit">🚗 Honda Fit <span>Honda</span></div>
-        <div class="car-item" onclick="showCar('civic')" data-name="honda civic">🚗 Honda Civic <span>Honda</span></div>
-        <div class="car-item" onclick="showCar('vezel')" data-name="honda vezel">🚙 Honda Vezel <span>Honda</span></div>
-        <div class="car-item" onclick="showCar('insight')" data-name="honda insight">🚗 Honda Insight <span>Honda</span></div>
-
-        <!-- Suzuki -->
-        <div class="car-item" onclick="showCar('swift')" data-name="suzuki swift">🚗 Suzuki Swift <span>Suzuki</span></div>
-        <div class="car-item" onclick="showCar('solio')" data-name="suzuki solio">🚐 Suzuki Solio <span>Suzuki</span></div>
-        <div class="car-item" onclick="showCar('wagonr')" data-name="suzuki wagon r">🚗 Suzuki Wagon R <span>Suzuki</span></div>
-
-        <!-- Nissan -->
-        <div class="car-item" onclick="showCar('note')" data-name="nissan note">🚗 Nissan Note <span>Nissan</span></div>
-        <div class="car-item" onclick="showCar('xtrail')" data-name="nissan x-trail">🚙 Nissan X-Trail <span>Nissan</span></div>
-
-        <!-- Mazda -->
-        <div class="car-item" onclick="showCar('mazda2')" data-name="mazda 2">🚗 Mazda 2 <span>Mazda</span></div>
-        <div class="car-item" onclick="showCar('mazda3')" data-name="mazda 3">🚗 Mazda 3 <span>Mazda</span></div>
+    <h2>🚗 ကားအချက်အလက် ဖြည့်သွင်းရန်</h2>
+    
+    <div class="form-group">
+        <label>ကားအမျိုးအစား (Brand):</label>
+        <input type="text" id="brand" placeholder="ဥပမာ - Toyota">
     </div>
-
-    <!-- ကားအသေးစိတ်နှင့် ပုံများပေါ်မည့်နေရာ -->
-    <div id="carDetails" class="details-box">
-        <h3 id="carTitle" style="margin-top:0;"></h3>
-        <div class="photo-gallery" id="carGallery"></div>
-        <p><b>Grade:</b> <span id="carGrade"></span></p>
-        <p><b>Mileage:</b> <span id="carMileage"></span></p>
-        <p><b>Price:</b> <span id="carPrice" class="price"></span></p>
-        <p id="carDesc" style="font-size: 13px; color: #444;"></p>
+    
+    <div class="form-group">
+        <label>မော်ဒယ် (Model):</label>
+        <input type="text" id="model" placeholder="ဥပမာ - Crown">
     </div>
+    
+    <div class="form-group">
+        <label>ဈေးနှုန်း (Price):</label>
+        <input type="text" id="price" placeholder="ဥပမာ - 350 Lakhs">
+    </div>
+    
+    <button onclick="submitData()">💾 ဒေတာသိမ်းမည်</button>
 
     <script>
-        const carsData = {
-            prius: { title: "Toyota Prius", grade: "S Tour
+        // Telegram Web App ကို ချိတ်ဆက်ခြင်း
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function submitData() {
+            let brand = document.getElementById('brand').value.trim();
+            let model = document.getElementById('model').value.trim();
+            let price = document.getElementById('price').value.trim();
+
+            if (!brand || !model || !price) {
+                alert("ကျေးဇူးပြု၍ အချက်အလက်များ အားလုံး ဖြည့်ပါ။");
+                return;
+            }
+
+            let carData = {
+                brand: brand,
+                model: model,
+                price: price
+            };
+
+            // Telegram Bot ဆီသို့ Data ပို့ခြင်း
+            tg.sendData(JSON.stringify(carData));
+            tg.close();
+        }
+    </script>
+
+</body>
+</html>
