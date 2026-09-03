@@ -7,76 +7,84 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; background: #f4f4f9; margin: 0; padding: 15px; text-align: center; }
-        h1 { color: #333; font-size: 22px; }
+        h1 { color: #333; font-size: 20px; margin-bottom: 5px; }
+        p { color: #666; font-size: 14px; margin-top: 0; }
+        .search-box { width: 100%; max-width: 400px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
         .car-list { display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto; }
-        .car-item { background: #fff; padding: 12px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; text-align: left; }
+        .car-item { background: #fff; padding: 12px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .car-item:hover { background: #e0e0e0; }
+        .car-item span { font-size: 12px; color: #777; background: #eee; padding: 3px 8px; border-radius: 4px; }
+        
         .details-box { background: #fff; margin-top: 20px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; max-width: 400px; margin-left: auto; margin-right: auto; text-align: left; }
-        .details-box img { width: 100%; border-radius: 6px; height: 200px; object-fit: cover; }
-        .price { color: #d9534f; font-weight: bold; }
+        
+        /* ပုံများစွာ ဘေးချင်းယှဉ်ဆွဲကြည့်လို့ရမည့် Gallery Slide ပုံစံ */
+        .photo-gallery { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; }
+        .photo-gallery img { width: 280px; height: 180px; border-radius: 6px; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .price { color: #d9534f; font-weight: bold; font-size: 16px; }
+        .desc { font-size: 13px; color: #444; background: #fafafa; padding: 8px; border-radius: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <h1>HG Japan Car Listings</h1>
-    <p>ကြိုက်နှစ်သက်ရာ ကားကိုနှိပ်၍ အသေးစိတ်ကြည့်ပါ။</p>
+    <p>ကြိုက်နှစ်သက်ရာ ကားကို နှိပ်၍ ပုံစုံစုံနှင့် အသေးစိတ်ကြည့်ပါ။</p>
+
+    <!-- ကားရှာဖွေရန် Search Bar -->
+    <input type="text" id="searchInput" class="search-box" placeholder="ကားနာမည်ဖြင့် ရှာရန်..." onkeyup="searchCars()">
 
     <!-- ကားအမျိုးအစားများ List -->
-    <div class="car-list">
-        <div class="car-item" onclick="showCar('prius')">🚗 Toyota Prius (2018)</div>
-        <div class="car-item" onclick="showCar('fit')">🚗 Honda Fit (2017)</div>
-        <div class="car-item" onclick="showCar('crown')">🚗 Toyota Crown Athlete</div>
+    <div class="car-list" id="carListContainer">
+        <div class="car-item" onclick="showCar('prius')" data-name="toyota prius 2018">🚗 Toyota Prius (2018) <span>Toyota</span></div>
+        <div class="car-item" onclick="showCar('fit')" data-name="honda fit 2017">🚗 Honda Fit (2017) <span>Honda</span></div>
     </div>
 
-    <!-- နှိပ်လိုက်ရင် အချက်အလက်ပေါ်လာမည့် နေရာ -->
+    <!-- ကားအသေးစိတ်နှင့် ပုံများပေါ်မည့်နေရာ -->
     <div id="carDetails" class="details-box">
-        <img id="carImg" src="" alt="Car Image">
-        <h3 id="carTitle"></h3>
+        <h3 id="carTitle" style="margin-top:0;"></h3>
+        
+        <!-- ပုံအစုံပေါ်မည့် Gallery နေရာ -->
+        <div class="photo-gallery" id="carGallery">
+            <!-- JavaScript ဖြင့် ပုံများ ဝင်လာမည် -->
+        </div>
+
         <p><b>Grade:</b> <span id="carGrade"></span></p>
         <p><b>Mileage:</b> <span id="carMileage"></span></p>
         <p><b>Price:</b> <span id="carPrice" class="price"></span></p>
+        <p class="desc" id="carDescription"></p>
     </div>
 
     <script>
-        // ကားအချက်အလက် ဒေတာများ
+        // ကားတစ်စီးချင်းစီအတွက် ပုံများစွာ (၁၅ ပုံအထိ ထည့်နိုင်သည်) နှင့် ဈေးနှုန်းအချက်အလက်များ
         const carsData = {
             prius: {
-                title: "Toyota Prius 2018",
+                title: "Toyota Prius 2018 (S Touring)",
                 grade: "S Touring Selection",
                 mileage: "65,000 km",
                 price: "သိန်း ၇၀၀ ကျော်",
-                image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500"
+                description: "အင်ဂျင်ဝိုင်အသစ်လဲပြီး၊ လိုင်စင်အသစ်၊ အတိုက်အခိုက်လုံးဝမရှိပါ၊ ပုံစံအလွန်သန့်ပါသည်။",
+                // ဤနေရာတွင် ကိုယ်တင်လိုသော ကားပုံ လိပ်စာ (URLs) များကို ၁ ပုံချင်းစီ ထည့်ပါ (၁၅ ပုံအထိ သို့မဟုတ် လိုသလောက် ထည့်နိုင်သည်)
+                images: [
+                    "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500",
+                    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500",
+                    "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500",
+                    "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=500"
+                    // လိုအပ်ပါက ကားပုံလိပ်စာများကို ဤနေရာတွင် ကော်မာ (,) ခံ၍ ထပ်ထည့်နိုင်ပါသည်
+                ]
             },
             fit: {
-                title: "Honda Fit 2017",
+                title: "Honda Fit 2017 (F Package)",
                 grade: "F Package",
                 mileage: "52,000 km",
                 price: "သိန်း ၅၀၀ ကျော်",
-                image: "https://images.unsplash.com/photo-1590362891991-f776e747a588?w=500"
-            },
-            crown: {
-                title: "Toyota Crown Athlete",
-                grade: "G-Executive",
-                mileage: "70,000 km",
-                price: "သိန်း ၁၂၀၀ ကျော်",
-                image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500"
+                description: "Grade ကောင်း၊ ကားအရမ်းစလစ်ကျပြီး တစ်လက်ကိုင်ဖြစ်ပါသည်။",
+                images: [
+                    "https://images.unsplash.com/photo-1590362891991-f776e747a588?w=500",
+                    "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=500",
+                    "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=500"
+                ]
             }
         };
 
         function showCar(carKey) {
-            const car = carsData[carKey];
-            if (car) {
-                document.getElementById('carImg').src = car.image;
-                document.getElementById('carTitle').innerText = car.title;
-                document.getElementById('carGrade').innerText = car.grade;
-                document.getElementById('carMileage').innerText = car.mileage;
-                document.getElementById('carPrice').innerText = car.price;
-                
-                // အကွက်လေးကို ပေါ်လာစေရန်
-                document.getElementById('carDetails').style.display = 'block';
-            }
-        }
-    </script>
-
-</body>
-</html>
+           
