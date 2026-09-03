@@ -10,7 +10,7 @@
         h1 { color: #333; font-size: 20px; margin-bottom: 5px; }
         p { color: #666; font-size: 14px; margin-top: 0; }
         .search-box { width: 100%; max-width: 400px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
-        .car-list { display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto; }
+        .car-list { display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto; max-height: 400px; overflow-y: auto; }
         .car-item { background: #fff; padding: 12px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .car-item:hover { background: #e0e0e0; }
         .car-item span { font-size: 12px; color: #777; background: #eee; padding: 3px 8px; border-radius: 4px; }
@@ -23,17 +23,39 @@
 <body>
 
     <h1>HG Japan Car Listings</h1>
-    <p>ကြိုက်နှစ်သက်ရာ ကားကို နှိပ်၍ အချက်အလက်များကို ကြည့်ပါ။</p>
+    <p>ကြိုက်နှစ်သက်ရာ ဂျပန်ကားကို ရှာပါ သို့မဟုတ် နှိပ်၍ ကြည့်ပါ။</p>
 
     <!-- ကားရှာဖွေရန် Search Bar -->
-    <input type="text" id="searchInput" class="search-box" placeholder="ကားနာမည်ဖြင့် ရှာရန်..." onkeyup="searchCars()">
+    <input type="text" id="searchInput" class="search-box" placeholder="ကားနာမည်ဖြင့် ရှာရန် (ဥပမာ - Prius, Swift, Crown)..." onkeyup="searchCars()">
 
     <!-- ကားအမျိုးအစားများ List -->
     <div class="car-list" id="carListContainer">
-        <div class="car-item" onclick="showCar('prius')" data-name="toyota prius 2018">🚗 Toyota Prius (2018) <span>Toyota</span></div>
-        <div class="car-item" onclick="showCar('crown')" data-name="toyota crown athlete">🚗 Toyota Crown Athlete <span>Toyota</span></div>
-        <div class="car-item" onclick="showCar('vellfire')" data-name="toyota vellfire 2019">🚐 Toyota Vellfire (2019) <span>Toyota</span></div>
-        <div class="car-item" onclick="showCar('fit')" data-name="honda fit 2017">🚗 Honda Fit (2017) <span>Honda</span></div>
+        <!-- Toyota -->
+        <div class="car-item" onclick="showCar('prius')" data-name="toyota prius">🚗 Toyota Prius <span>Toyota</span></div>
+        <div class="car-item" onclick="showCar('crown')" data-name="toyota crown">🚗 Toyota Crown <span>Toyota</span></div>
+        <div class="car-item" onclick="showCar('vellfire')" data-name="toyota vellfire">🚐 Toyota Vellfire <span>Toyota</span></div>
+        <div class="car-item" onclick="showCar('alphard')" data-name="toyota alphard">🚐 Toyota Alphard <span>Toyota</span></div>
+        <div class="car-item" onclick="showCar('yaris')" data-name="toyota yaris">🚗 Toyota Yaris <span>Toyota</span></div>
+        <div class="car-item" onclick="showCar('probox')" data-name="toyota probox">🚙 Toyota Probox <span>Toyota</span></div>
+        
+        <!-- Honda -->
+        <div class="car-item" onclick="showCar('fit')" data-name="honda fit">🚗 Honda Fit <span>Honda</span></div>
+        <div class="car-item" onclick="showCar('civic')" data-name="honda civic">🚗 Honda Civic <span>Honda</span></div>
+        <div class="car-item" onclick="showCar('vezel')" data-name="honda vezel">🚙 Honda Vezel <span>Honda</span></div>
+        <div class="car-item" onclick="showCar('insight')" data-name="honda insight">🚗 Honda Insight <span>Honda</span></div>
+
+        <!-- Suzuki -->
+        <div class="car-item" onclick="showCar('swift')" data-name="suzuki swift">🚗 Suzuki Swift <span>Suzuki</span></div>
+        <div class="car-item" onclick="showCar('solio')" data-name="suzuki solio">🚐 Suzuki Solio <span>Suzuki</span></div>
+        <div class="car-item" onclick="showCar('wagonr')" data-name="suzuki wagon r">🚗 Suzuki Wagon R <span>Suzuki</span></div>
+
+        <!-- Nissan -->
+        <div class="car-item" onclick="showCar('note')" data-name="nissan note">🚗 Nissan Note <span>Nissan</span></div>
+        <div class="car-item" onclick="showCar('xtrail')" data-name="nissan x-trail">🚙 Nissan X-Trail <span>Nissan</span></div>
+
+        <!-- Mazda -->
+        <div class="car-item" onclick="showCar('mazda2')" data-name="mazda 2">🚗 Mazda 2 <span>Mazda</span></div>
+        <div class="car-item" onclick="showCar('mazda3')" data-name="mazda 3">🚗 Mazda 3 <span>Mazda</span></div>
     </div>
 
     <!-- ကားအသေးစိတ်နှင့် ပုံများပေါ်မည့်နေရာ -->
@@ -48,45 +70,4 @@
 
     <script>
         const carsData = {
-            prius: {
-                title: "Toyota Prius 2018 (S Touring)",
-                grade: "S Touring Selection",
-                mileage: "65,000 km",
-                price: "သိန်း ၇၀၀ ကျော်",
-                description: "အင်ဂျင်ဝိုင်အသစ်လဲပြီး၊ အတိုက်အခိုက်လုံးဝမရှိပါ။",
-                images: [
-                    "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500",
-                    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500"
-                ]
-            },
-            crown: {
-                title: "Toyota Crown Athlete",
-                grade: "G-Executive",
-                mileage: "70,000 km",
-                price: "သိန်း ၁၂၀၀ ကျော်",
-                description: "ကားအလွန်သန့်၊ ဘီးစုံအလွတ် တာယာအသစ်။",
-                images: [
-                    "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500",
-                    "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500"
-                ]
-            },
-            vellfire: {
-                title: "Toyota Vellfire 2019",
-                grade: "Z G-Edition",
-                mileage: "45,000 km",
-                price: "သိန်း ၂,၅၀၀ ကျော်",
-                description: "Sunroof ပါ၊ Captain Seat အပြည့်အစုံ။",
-                images: [
-                    "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500"
-                ]
-            },
-            fit: {
-                title: "Honda Fit 2017 (F Package)",
-                grade: "F Package",
-                mileage: "52,000 km",
-                price: "သိန်း ၅၀၀ ကျော်",
-                description: "Grade ကောင်း၊ တစ်လက်ကိုင်ဖြစ်ပါသည်။",
-                images: [
-                    "https://images.unsplash.com/photo-1590362891991-f776e747a588?w=500"
-                ]
-     
+            prius: { title: "Toyota Prius", grade: "S Tour
